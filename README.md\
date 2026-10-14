@@ -1,0 +1,123 @@
+# JWT Authentication API
+
+A backend authentication project built with **FastAPI, SQLModel, and SQLite**, implementing JWT-based authentication with access tokens and refresh token rotation.
+
+## Features
+
+- User signup and login
+- Password hashing using Argon2
+- JWT access tokens with a 15-minute expiry
+- Securely stored refresh token hashes
+- Refresh token rotation with 7-day expiry
+- Protected routes using FastAPI dependencies
+- Logout by revoking the current refresh token
+- SQLite database integration using SQLModel
+
+## Tech Stack
+
+- Python
+- FastAPI
+- SQLModel
+- SQLite
+- PyJWT
+- pwdlib with Argon2
+- python-dotenv
+
+## Project Structure
+
+```text
+jwt-auth/
+├── core/
+│   └── security.py
+├── models/
+│   ├── user.py
+│   └── refresh_token.py
+├── routes/
+│   ├── auth.py
+│   └── users.py
+├── schemas/
+│   └── auth.py
+├── database.py
+├── main.py
+├── .env.example
+└── .gitignore
+```
+
+## Getting Started
+
+### 1. Clone the repository
+
+```bash
+git clone <your-repository-url>
+cd jwt-auth
+```
+
+### 2. Install dependencies
+
+Install [uv](https://docs.astral.sh/uv/) if it isn't already installed.
+
+```bash
+uv sync
+```
+
+If the project doesn't have a `pyproject.toml` and `uv.lock` yet, initialize the project and add the dependencies before running `uv sync`.
+
+### 3. Configure environment variables
+
+Create a `.env` file in the project root:
+
+```env
+DATABASE_URL=sqlite:///auth.db
+JWT_SECRET=your-strong-random-secret
+```
+
+Generate a strong random secret for your environment. Never commit your real `.env` file.
+
+### 4. Run the application
+
+```bash
+uv run fastapi dev main.py
+```
+
+Open the interactive API documentation at:
+
+http://127.0.0.1:8000/docs
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/auth/signup` | Register a user |
+| POST | `/auth/login` | Authenticate and obtain tokens |
+| POST | `/auth/refresh` | Rotate refresh token and obtain a new access token |
+| POST | `/auth/logout` | Revoke the supplied refresh token |
+| GET | `/users/me` | Get the authenticated user's details |
+
+*Endpoint paths assume the routers are mounted with `/auth` and `/users` prefixes.*
+
+## Authentication Flow
+
+1. Register using the signup endpoint.
+2. Log in to receive an access token and refresh token.
+3. Send the access token in the `Authorization` header:
+
+   ```text
+   Authorization: Bearer <access_token>
+   ```
+
+4. When the access token expires, send the refresh token to `/auth/refresh`.
+5. Store the newly returned refresh token and stop using the previous one.
+6. To log out, submit the current refresh token to `/auth/logout`.
+
+## Security Notes
+
+- Passwords are hashed before being stored.
+- Only hashes of refresh tokens are stored in the database.
+- Access tokens expire after 15 minutes; refresh tokens expire after 7 days.
+- Refresh token rotation prevents a revoked token from being reused successfully.
+- Logging out revokes the refresh token, but an already-issued access token can remain valid until it expires.
+- Use HTTPS and secure token storage in production.
+
+## Learning Goals
+
+This project explores FastAPI routing, dependency injection, SQLModel database sessions, password hashing, JWT verification, refresh token lifecycle management, and protected API endpoints.

@@ -1,0 +1,11 @@
+[project]
+name = "jwt-auth"
+version = "0.1.0"
+requires-python = ">=3.14"
+dependencies = [
+    "fastapi[standard]>=0.143.0",
+    "pwdlib[argon2]>=0.3.1",
+    "pyjwt>=2.15.1",
+    "python-dotenv>=1.2.4",
+    "sqlmodel>=0.0.48",
+]

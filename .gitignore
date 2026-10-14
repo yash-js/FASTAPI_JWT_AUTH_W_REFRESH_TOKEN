@@ -1,0 +1,4 @@
+.env
+auth.db
+__pycache__/
+.venv/
